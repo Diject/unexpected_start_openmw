@@ -148,7 +148,7 @@ end
 function this.disableRemainingActors(cell)
     local disable = function(actor)
         if not chargenNPCs[actor.recordId] and not guardRecords[actor.recordId] and not initialData[actor.id] and
-                types.Actor.stats.dynamic.health(actor) > 0 then
+                types.Actor.stats.dynamic.health(actor).current > 0 then
             initialData[actor.id] = {}
             initialData[actor.id].enabled = actor.enabled
             actor.enabled = false
