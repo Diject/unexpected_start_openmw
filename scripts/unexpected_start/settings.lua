@@ -38,7 +38,7 @@ I.Settings.registerGroup({
     order = 0,
     settings = {
         boolSetting({key = "enabled", name = "enabled", default = true}),
-        boolSetting({key = "allowJustExit", name = "allowJustExit", default = true}),
+        boolSetting({key = "lockExit", name = "lockExit", default = false}),
         boolSetting({key = "onlyInACity", name = "onlyInACity", default = true}),
         boolSetting({key = "spawnGuards", name = "spawnGuards", default = true}),
     },

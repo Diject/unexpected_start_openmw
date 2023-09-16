@@ -54,7 +54,7 @@ if not config then
         enabled = true,
         chanceToSpawnGuard = 0.5,
         spawnGuards = true,
-        allowJustExit = true,
+        lockExit = false,
         onlyInACity = false,
     }
 end
@@ -405,8 +405,9 @@ local function exitDoorActivation(door, actor)
             local inventory = types.Actor.inventory(actor)
             local statsSheetCount = inventory:countOf(chargenStatsSheet)
             if statsSheetCount > 0 then
-                inventory:find(chargenStatsSheet).remove(statsSheetCount)
+                inventory:find(chargenStatsSheet):remove(statsSheetCount)
             end
+            commands.addFindspymasterQuest()
             async:newUnsavableSimulationTimer(0.2, function()
                 world.players[1]:sendEvent("usbd_showMessage", {message = readyMessage})
             end)
@@ -470,12 +471,12 @@ function this.prepareCell(cell)
     end
     if chargenNPCs["chargen name"].ref then
         for _, door in pairs(cell:getAll(types.Door)) do
-            if types.Door.isTeleport(door) and (not config.allowJustExit or this.isInterior(types.Door.destCell(door))) then
+            if types.Door.isTeleport(door) and (config.lockExit or this.isInterior(types.Door.destCell(door))) then
                 types.Lockable.lock(door, 100)
             else
                 types.Lockable.unlock(door)
             end
-            if types.Door.isTeleport(door) and config.allowJustExit and not this.isInterior(types.Door.destCell(door)) then
+            if types.Door.isTeleport(door) and not config.lockExit and not this.isInterior(types.Door.destCell(door)) then
                 door:teleport(cell, door.position, {rotation = door.rotation})
                 Activation.addHandlerForObject(door, exitDoorActivation)
             end

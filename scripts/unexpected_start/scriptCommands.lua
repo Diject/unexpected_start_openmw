@@ -38,4 +38,10 @@ function this.finishChargen()
     return activator
 end
 
+function this.addFindspymasterQuest()
+    local activator = world.createObject("usbd_add_findspymaster_quest_activator", 1)
+    activator:teleport(world.players[1].cell, world.players[1].position, {})
+    return activator
+end
+
 return this
