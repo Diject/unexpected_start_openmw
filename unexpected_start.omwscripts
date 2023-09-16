@@ -1,0 +1,4 @@
+GLOBAL: scripts/unexpected_start/main.lua
+PLAYER: scripts/unexpected_start/player.lua
+NPC, PLAYER: scripts/unexpected_start/actor.lua
+CUSTOM: scripts/unexpected_start/teleportedHandler.lua

@@ -1,0 +1,6 @@
+modName: "An Unexpected Start"
+modDescription: "A mod that randomizes where you start the game.\n\nAll settings will be applied in a next new game"
+enabled: "Enable the mod"
+allowJustExit: "Lock a exit from the starting location until the character generation sequence is complete"
+onlyInACity: Try to start the game only in a location near a city
+spawnGuards: "Spawn imperial guards in large locations"
