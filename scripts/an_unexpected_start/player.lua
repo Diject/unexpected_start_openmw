@@ -5,7 +5,7 @@ local storage = require('openmw.storage')
 local core = require('openmw.core')
 local self = require('openmw.self')
 
-local settings = require("scripts.unexpected_start.settings")
+local settings = require("scripts.an_unexpected_start.settings")
 core.sendGlobalEvent("usbd_loadConfig", {config = storage.playerSection(settings.storageName):asTable()})
 
 local function usbd_enableControls(data)

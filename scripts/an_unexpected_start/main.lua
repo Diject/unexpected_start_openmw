@@ -6,7 +6,7 @@ local core = require('openmw.core')
 local util = require('openmw.util')
 local time = require('openmw_aux.time')
 local Activation = require('openmw.interfaces').Activation
-local commands = require("scripts.unexpected_start.scriptCommands")
+local commands = require("scripts.an_unexpected_start.scriptCommands")
 
 local this = {}
 
@@ -231,7 +231,7 @@ function this.prepareChargenCompletion()
         y = playerCell.isExterior and playerCell.gridY,
         position = util.vector3(playerPos.x, playerPos.y, playerPos.z)
     }})
-    world.players[1]:addScript("scripts/unexpected_start/teleportedHandler.lua")
+    world.players[1]:addScript("scripts/an_unexpected_start/teleportedHandler.lua")
     this.teleportToNextPositionInQueue()
 end
 
@@ -604,7 +604,7 @@ local function usbd_objectTeleported(params)
             end
             this.teleportToNextPositionInQueue()
         else
-            world.players[1]:removeScript("scripts/unexpected_start/teleportedHandler.lua")
+            world.players[1]:removeScript("scripts/an_unexpected_start/teleportedHandler.lua")
         end
     end
 end

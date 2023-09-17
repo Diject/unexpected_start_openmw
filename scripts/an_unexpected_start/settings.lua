@@ -6,8 +6,8 @@ local ui = require('openmw.ui')
 local util = require('openmw.util')
 
 local this = {}
-this.storageName = "SettingsUnexpectedStartByDiject"
-local l10nName = "unexpected_start"
+this.storageName = "SettingsAnUnexpectedStartByDiject"
+local l10nName = "an_unexpected_start"
 
 local function boolSetting(args)
     return {
