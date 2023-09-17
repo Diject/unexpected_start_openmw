@@ -1,8 +1,12 @@
 -- TODO write code without a single comment - done
+local core = require('openmw.core')
+if not core.contentFiles.has(require("scripts.an_unexpected_start.modData").addonFileName) then
+    return
+end
+
 local world = require('openmw.world')
 local async = require('openmw.async')
 local types = require('openmw.types')
-local core = require('openmw.core')
 local util = require('openmw.util')
 local time = require('openmw_aux.time')
 local Activation = require('openmw.interfaces').Activation

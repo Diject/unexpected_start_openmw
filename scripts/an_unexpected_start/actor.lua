@@ -1,8 +1,12 @@
+local core = require('openmw.core')
+if not core.contentFiles.has(require("scripts.an_unexpected_start.modData").addonFileName) then
+    return
+end
+
 local async = require('openmw.async')
 local types = require('openmw.types')
 local self = require('openmw.self')
 local nearby = require('openmw.nearby')
-local core = require('openmw.core')
 local util = require('openmw.util')
 
 local function randomPointInRadius(vector, radius)

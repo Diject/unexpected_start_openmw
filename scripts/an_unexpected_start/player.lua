@@ -1,8 +1,12 @@
+local core = require('openmw.core')
+if not core.contentFiles.has(require("scripts.an_unexpected_start.modData").addonFileName) then
+    return
+end
+
 local input = require('openmw.input')
 local async = require('openmw.async')
 local ui = require('openmw.ui')
 local storage = require('openmw.storage')
-local core = require('openmw.core')
 local self = require('openmw.self')
 
 local settings = require("scripts.an_unexpected_start.settings")
