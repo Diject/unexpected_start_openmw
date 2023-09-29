@@ -17,7 +17,7 @@ local this = {}
 local chargenNPCs = {
     ["chargen captain"] = {ref = nil, cell = {id = "Seyda Neen, Census and Excise Office", x = nil, y = nil, position = util.vector3(1366.27,-380.32,195.75)}, orientation = nil},
     ["chargen class"] = {ref = nil, cell = {id = "Seyda Neen, Census and Excise Office", x = nil, y = nil, position = util.vector3(242.30,-111.06,211.02)}, orientation = nil},
-    ["chargen dock guard alt"] = {ref = nil, shouldDeleted = true, cell = {id = nil, x = -2, y = -9, position = util.vector3(-9797.83,-72522.74,125.52)}, orientation = nil},
+    ["usbd_chargen dock guard alt"] = {ref = nil, shouldDeleted = true, cell = {id = nil, x = -2, y = -9, position = util.vector3(-9797.83,-72522.74,125.52)}, orientation = nil},
     ["chargen name"] = {ref = nil, cell = {id = "Imperial Prison Ship", x = nil, y = nil, position = util.vector3(17.80,-66.11,-103.26)}, orientation = nil},
 }
 local chargenNPCs_count = 4
@@ -244,6 +244,7 @@ function this.finishCharacterGeneration()
     this.prepareChargenCompletion()
     this.resoreInitialData(newCell)
     commands.finishChargen()
+    world.players[1]:sendEvent("usbd_removeLevitationScript")
 end
 
 function this.enableAllControls()
@@ -278,8 +279,8 @@ function this.onSimulate()
             if variables and variables["state"] == 20 then
                 world.players[1]:sendEvent('usbd_enableControls', {control = "Controls", value = true})
                 world.players[1]:sendEvent('usbd_enableControls', {control = "Jumping", value = true})
-                if chargenNPCs["chargen dock guard alt"].ref then
-                    local npc = chargenNPCs["chargen dock guard alt"].ref
+                if chargenNPCs["usbd_chargen dock guard alt"].ref then
+                    local npc = chargenNPCs["usbd_chargen dock guard alt"].ref
                     local tm
                     tm = time.runRepeatedly(function()
                         if state < 4 and npc and npc:isValid() then
@@ -301,21 +302,21 @@ function this.onSimulate()
                 local value = variables["state"]
                 if value == 10 and state < 6 then
                     -- this.faceActorToActor(chargenNPCs["chargen class"].ref, world.players[1])
-                    -- this.faceActorToActor(chargenNPCs["chargen dock guard alt"].ref, world.players[1])
+                    -- this.faceActorToActor(chargenNPCs["usbd_chargen dock guard alt"].ref, world.players[1])
                     state = state < 6 and 6 or state
                 elseif value == 30 then
                     local item = world.createObject(chargenStatsSheet, 1)
                     item:moveInto(types.Actor.inventory(world.players[1]))
                     local pos = chargenNPCs["chargen captain"].ref.position ---@diagnostic disable-line: undefined-field, need-check-nil
-                    chargenNPCs["chargen dock guard alt"].ref:sendEvent('StartAIPackage', {type='Travel', destPosition = pos}) ---@diagnostic disable-line: undefined-field, need-check-nil
+                    chargenNPCs["usbd_chargen dock guard alt"].ref:sendEvent('StartAIPackage', {type='Travel', destPosition = pos}) ---@diagnostic disable-line: undefined-field, need-check-nil
                     state = state < 8 and 8 or state
                     variables["state"] = -1
                 end
             end
         end
     end
-    if chargenNPCs["chargen dock guard alt"].ref and chargenNPCs["chargen class"].ref and state >= 3 and state < 5 then
-        local script = world.mwscript.getLocalScript(chargenNPCs["chargen dock guard alt"].ref, world.players[1])
+    if chargenNPCs["usbd_chargen dock guard alt"].ref and chargenNPCs["chargen class"].ref and state >= 3 and state < 5 then
+        local script = world.mwscript.getLocalScript(chargenNPCs["usbd_chargen dock guard alt"].ref, world.players[1])
         if script then
             local variables = script.variables
             if variables and variables["state"] then
@@ -323,7 +324,7 @@ function this.onSimulate()
                 if state == 3 and value == 30 then
                     state = state < 4 and 4 or state
                 elseif value == 50 and state == 4 then
-                    local ref = chargenNPCs["chargen dock guard alt"].ref
+                    local ref = chargenNPCs["usbd_chargen dock guard alt"].ref
                     local pos = chargenNPCs["chargen class"].ref.position ---@diagnostic disable-line: undefined-field, need-check-nil
                     async:newUnsavableSimulationTimer(7, function()
                         if ref and ref:isValid() then
@@ -425,7 +426,7 @@ function this.prepareCell(cell)
     this.saveInitialData(cell)
     chargenNPCs["chargen name"].ref = nil
     chargenNPCs["chargen class"].ref = nil
-    chargenNPCs["chargen dock guard alt"].ref = nil
+    chargenNPCs["usbd_chargen dock guard alt"].ref = nil
     chargenNPCs["chargen captain"].ref = nil
     do
         local refForSpot = {}
@@ -488,6 +489,7 @@ function this.prepareCell(cell)
             types.Lockable.setKeyRecord(door, nil)
         end
 
+        world.players[1]:addScript("scripts/an_unexpected_start/levitation.lua")
         chargenNPCs["chargen name"].ref:sendEvent("usbd_teleportToAndRotate", {reference = world.players[1]}) ---@diagnostic disable-line: undefined-field, need-check-nil
         state = state < 2 and 2 or state
         this.simulateTimer = time.runRepeatedly(this.onSimulate, 0.1 * time.second, {})
@@ -613,6 +615,11 @@ local function usbd_objectTeleported(params)
     end
 end
 
+local function usbd_removeScript(data)
+    if not data.reference or not data.scriptName then return end
+    data.reference:removeScript(data.scriptName)
+end
+
 return {
     engineHandlers = {
         onNewGame = async:callback(onNewGame),
@@ -621,5 +628,6 @@ return {
         usbd_teleport = async:callback(teleport),
         usbd_loadConfig = usbd_loadConfig,
         usbd_objectTeleported = async:callback(usbd_objectTeleported),
+        usbd_removeScript = async:callback(usbd_removeScript),
     },
 }

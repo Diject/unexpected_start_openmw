@@ -2,3 +2,4 @@ GLOBAL: scripts/an_unexpected_start/main.lua
 PLAYER: scripts/an_unexpected_start/player.lua
 NPC, PLAYER: scripts/an_unexpected_start/actor.lua
 CUSTOM: scripts/an_unexpected_start/teleportedHandler.lua
+CUSTOM: scripts/an_unexpected_start/levitation.lua

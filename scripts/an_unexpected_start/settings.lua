@@ -5,8 +5,10 @@ local core = require('openmw.core')
 local ui = require('openmw.ui')
 local util = require('openmw.util')
 
+local names = require("scripts.an_unexpected_start.names")
+
 local this = {}
-this.storageName = "SettingsAnUnexpectedStartByDiject"
+this.storageName = names.storageName
 local l10nName = "an_unexpected_start"
 
 local function boolSetting(args)
@@ -41,6 +43,7 @@ I.Settings.registerGroup({
         boolSetting({key = "lockExit", name = "lockExit", default = false}),
         boolSetting({key = "onlyInACity", name = "onlyInACity", default = true}),
         boolSetting({key = "spawnGuards", name = "spawnGuards", default = true}),
+        boolSetting({key = "applyLevitation", name = "applyLevitation", description = "applyLevitationDescription", default = true}),
     },
 })
 

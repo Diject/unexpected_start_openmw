@@ -4,3 +4,5 @@ enabled: "Enable the mod"
 lockExit: "Lock a exit from the starting location until the character generation sequence is complete"
 onlyInACity: Try to start the game only in a location near a city
 spawnGuards: "Spawn imperial guards in large locations"
+applyLevitation: "Apply levitation when you are falling or looking up"
+applyLevitationDescription: "This setting allows you to bypass some locations that are impossible to complete without it"
