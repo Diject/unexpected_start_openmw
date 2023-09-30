@@ -12,7 +12,7 @@ local storage = require('openmw.storage').playerSection(names.storageName)
 
 local levitationSpellName = "usbd_levitation_passive_spell"
 
-local counter = 0
+local angleCounter = 0
 local notOnGroundCounter = 0
 local levitationEnabled = false
 local lockLevitation = false
@@ -24,9 +24,9 @@ timer = time.runRepeatedly(function()
     end
     local xAngle = self.rotation:getAnglesXZ()
     if xAngle and xAngle < -0.5 then
-        counter = counter + 1
+        angleCounter = angleCounter + 1
     else
-        counter = 0
+        angleCounter = 0
     end
     local onGround = Actor.isOnGround(self)
     local swimming = Actor.isSwimming(self)
@@ -39,7 +39,7 @@ timer = time.runRepeatedly(function()
         Actor.spells(self):add(levitationSpellName)
         levitationEnabled = true
     end
-    if counter > 20 then
+    if angleCounter > 20 then
         enableLevitation()
     elseif notOnGroundCounter > 13 then
         enableLevitation()
