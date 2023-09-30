@@ -245,6 +245,16 @@ function this.finishCharacterGeneration()
     this.resoreInitialData(newCell)
     commands.finishChargen()
     world.players[1]:sendEvent("usbd_removeLevitationScript")
+    if state < 10 then
+        local tm
+        tm = time.runRepeatedly(function()
+            if state < 10 then
+                this.exitDoorActivation(nil, world.players[1])
+            else
+                tm()
+            end
+        end, 1 * time.second, {})
+    end
 end
 
 function this.enableAllControls()
@@ -385,7 +395,7 @@ function this.onSimulate()
     end
 end
 
-local function exitDoorActivation(door, actor)
+function this.exitDoorActivation(door, actor)
     if actor.type ~= types.Player then return end
     if state > 0 and state < 10 then
         if state < 5 then
@@ -483,7 +493,7 @@ function this.prepareCell(cell)
             end
             if types.Door.isTeleport(door) and not config.lockExit and not this.isInterior(types.Door.destCell(door)) then
                 door:teleport(cell, door.position, {rotation = door.rotation})
-                Activation.addHandlerForObject(door, exitDoorActivation)
+                Activation.addHandlerForObject(door, this.exitDoorActivation)
             end
             types.Lockable.setTrapSpell(door, nil)
             types.Lockable.setKeyRecord(door, nil)
