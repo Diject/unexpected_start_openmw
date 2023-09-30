@@ -93,6 +93,11 @@ function this.distance(vector1, vector2)
     return math.sqrt(a * a + b * b + c * c)
 end
 
+function this.get2DDistance(vector1, vector2)
+    if not vector1 or not vector2 then return 0 end
+    return math.sqrt((vector2.x - vector1.x) ^ 2 + (vector2.y - vector1.y) ^ 2)
+end
+
 function this.faceActorToActor(actor, target)
     local vector1 = actor.position
     local vector2 = target.position
@@ -291,14 +296,16 @@ function this.onSimulate()
                 world.players[1]:sendEvent('usbd_enableControls', {control = "Jumping", value = true})
                 if chargenNPCs["usbd_chargen dock guard alt"].ref then
                     local npc = chargenNPCs["usbd_chargen dock guard alt"].ref
-                    local tm
-                    tm = time.runRepeatedly(function()
-                        if state < 4 and npc and npc:isValid() then
-                            npc:sendEvent('StartAIPackage', {type='Travel', destPosition = world.players[1].position})
-                        else
-                            tm()
-                        end
-                    end, 1 * time.second, {})
+                        async:newUnsavableSimulationTimer(5 + math.max(0, 4 - this.get2DDistance(npc.position, world.players[1].position) / 200), function()
+                        local tm
+                        tm = time.runRepeatedly(function()
+                            if state < 4 and npc and npc:isValid() then
+                                npc:sendEvent('StartAIPackage', {type='Travel', destPosition = world.players[1].position})
+                            else
+                                tm()
+                            end
+                        end, 1 * time.second, {})
+                    end)
                 end
                 state = state < 3 and 3 or state
             end
@@ -438,6 +445,7 @@ function this.prepareCell(cell)
     chargenNPCs["chargen class"].ref = nil
     chargenNPCs["usbd_chargen dock guard alt"].ref = nil
     chargenNPCs["chargen captain"].ref = nil
+    local chargenNPCIds = {"chargen name", "usbd_chargen dock guard alt", "chargen class", "chargen captain"}
     do
         local refForSpot = {}
         for _, ref in pairs(cell:getAll(types.NPC)) do
@@ -452,9 +460,24 @@ function this.prepareCell(cell)
                 table.insert(refForSpot, ref)
             end
         end
-        for id, params in pairs(chargenNPCs) do
+        local chargenNamePos
+        for _, id in ipairs(chargenNPCIds) do
+            local params = chargenNPCs[id]
+            if not params then goto continue end
             local oldRefId = math.random(#refForSpot)
             local oldRef = refForSpot[oldRefId]
+            if id == "usbd_chargen dock guard alt" and chargenNamePos then
+                local minDistance = math.huge
+                for refPos, ref in pairs(refForSpot) do
+                    local mul = 1 + math.floor(math.abs(ref.position.z - chargenNamePos.z) / 100)
+                    local distance = this.get2DDistance(ref.position, chargenNamePos) * mul
+                    if distance < minDistance then
+                        minDistance = distance
+                        oldRefId = refPos
+                        oldRef = ref
+                    end
+                end
+            end
             local npcCell = params.cell.id and world.getCellByName(params.cell.id) or world.getExteriorCell(params.cell.x, params.cell.y)
             if not npcCell then goto continue end
             local newRef = nil
@@ -472,6 +495,7 @@ function this.prepareCell(cell)
                 chargenNPCs[id].cellRef = newRef.cell
             end
             newRef:teleport(cell, oldRef.position, {rotation = oldRef.rotation, onGround = true})
+            if id == "chargen name" then chargenNamePos = oldRef.position end
             table.remove(refForSpot, oldRefId)
             if #refForSpot == 0 then break end
             ::continue::
