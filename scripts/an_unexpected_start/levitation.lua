@@ -9,6 +9,7 @@ local Actor = require('openmw.types').Actor
 local self = require('openmw.self')
 local time = require('openmw_aux.time')
 local storage = require('openmw.storage').playerSection(names.storageName)
+local ambient = require('openmw.ambient')
 
 local levitationSpellName = "usbd_levitation_passive_spell"
 
@@ -36,8 +37,11 @@ timer = time.runRepeatedly(function()
         notOnGroundCounter = 0
     end
     local function enableLevitation()
-        Actor.spells(self):add(levitationSpellName)
-        levitationEnabled = true
+        if not levitationEnabled then
+            Actor.spells(self):add(levitationSpellName)
+            ambient.playSound("alteration hit", {})
+            levitationEnabled = true
+        end
     end
     if angleCounter > 20 then
         enableLevitation()
