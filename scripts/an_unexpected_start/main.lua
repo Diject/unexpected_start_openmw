@@ -469,9 +469,9 @@ function this.prepareCell(cell)
             if id == "usbd_chargen dock guard alt" and chargenNamePos then
                 local minDistance = math.huge
                 for refPos, ref in pairs(refForSpot) do
-                    local mul = 1 + math.floor(math.abs(ref.position.z - chargenNamePos.z) / 100)
-                    local distance = this.get2DDistance(ref.position, chargenNamePos) * mul
-                    if distance < minDistance then
+                    local mul = math.floor(math.abs(ref.position.z - chargenNamePos.z) / 100)
+                    local distance = this.get2DDistance(ref.position, chargenNamePos) + 1000 * mul
+                    if distance < minDistance and distance > 150 then
                         minDistance = distance
                         oldRefId = refPos
                         oldRef = ref
